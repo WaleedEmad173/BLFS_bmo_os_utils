@@ -1,6 +1,9 @@
 
 #!/bin/bash
 
+cd ~
+cd /sources/BLFS
+
 # Get the script name without .sh extension
 folder_name=$(basename "$0" .sh)
 
