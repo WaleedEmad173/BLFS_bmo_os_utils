@@ -1,6 +1,6 @@
 #!/bin/bash
-set -ex
-trap 'echo "❌ Script failed at line $LINENO. Press Enter to close..."; read' ERR
+set -E
+trap 'echo "❌ Error: command failed at line $LINENO"; exit 1' ERR
 
 cd ~/sources/BLFS || exit 1
 
