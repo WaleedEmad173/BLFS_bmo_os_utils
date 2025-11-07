@@ -10,7 +10,7 @@ if [ -d "$folder_name" ]; then
     echo "✅ Folder '$folder_name' exists."
     exit 1
 else
-    . ./../BLFS_bmo_os_utils/scripts/installer.sh <SCRIPT>
+    . ./../BLFS_bmo_os_utils/scripts/installer.sh https://downloads.sourceforge.net/aa-project/aalib-1.4rc5.tar.gz
     echo "✅ the package downloaded successfully"
     sed -i -e '/AM_PATH_AALIB,/s/AM_PATH_AALIB/[&]/' aalib.m4
     sed -e 's/8x13bold/-*-luxi mono-bold-r-normal--13-120-*-*-m-*-*-*/' \
