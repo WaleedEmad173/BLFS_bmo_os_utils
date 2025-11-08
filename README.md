@@ -20,18 +20,28 @@ else
     . ./../BLFS_bmo_os_utils/scripts/installer.sh <SCRIPT>
     echo "✅ the package downloaded successfully"
 
-    <MORE_COMMAND_IF_EXISTS>
+    <MORE_COMMAND_IF_EXISTS_WITH_IF_STATEMENT>
 
-    <CONFIG> 
-    echo "✅ the package configured successfully"
+   echo "🔧 Running configure..."
+    if ! <CONFIG>; then
+        echo "❌ Error: configure failed!"
+        exit 1
+    fi
+
+    echo "⚙️  Running make..."
+    if ! <MAKE>; then
+        echo "❌ Error: make failed!"
+        exit 1
+    fi
     
-    <MAKE>
-    echo "✅ the package made successfully"
-    
-    <MAKE_INSTALL>
-    echo "✅ the package installed successfully"
-    
+    echo "⚙️ installing..."
+    if ! <MAKE_INSTALL>; then
+        echo "❌ Error: make failed!"
+        exit 1
+    fi
+
     <ETC>
+
 fi
 
 
