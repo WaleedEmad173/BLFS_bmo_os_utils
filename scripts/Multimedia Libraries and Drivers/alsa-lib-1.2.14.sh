@@ -1,5 +1,3 @@
-#!/bin/bash
-
 cd ~/sources/BLFS || exit 1
 
 folder_name=$(basename "$0" .sh)
@@ -10,7 +8,7 @@ folder_name=$(echo "$folder_name" | tr '[:upper:]' '[:lower:]')
 if [ -d "$folder_name" ]; then
     echo "✅ Folder '$folder_name' exists."
     exit 1
-else
+elsez
 
     wget  https://www.alsa-project.org/files/pub/lib/alsa-ucm-conf-1.2.14.tar.bz2 --no-check-certificate
 
