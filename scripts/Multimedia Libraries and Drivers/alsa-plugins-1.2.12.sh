@@ -1,3 +1,5 @@
+#!/bin/bash
+
 cd ~/sources/BLFS || exit 1
 
 folder_name=$(basename "$0" .sh)
