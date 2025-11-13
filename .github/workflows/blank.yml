@@ -1,36 +1,67 @@
-# This is a basic workflow to help you get started with Actions
+name: Test Build
 
-name: CI
-
-# Controls when the workflow will run
 on:
-  # Triggers the workflow on push or pull request events but only for the "main" branch
   push:
     branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
 
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
-
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
   build:
-    # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-      # Runs a single command using the runners shell
-      - name: Run a one-line script
-        run: echo Hello, world!
-
-      # Runs a set of commands using the runners shell
-      - name: Run a multi-line script
+      - name: Set up build dependencies
         run: |
-          echo Add other actions to build,
-          echo test, and deploy your project.
+          sudo apt update
+          sudo apt install -y build-essential bash wget tar make ninja-build
+
+      - name: Get changed scripts
+        id: changed_files
+        run: |
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            CHANGED=$(git diff --name-only origin/${{ github.base_ref }} HEAD | grep "^BLFS_bmo_os_utils/scripts/.*\.sh" || true)
+          else
+            CHANGED=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} 2>/dev/null | grep "^BLFS_bmo_os_utils/scripts/.*\.sh" || true)
+            if [[ -z "$CHANGED" ]]; then
+              CHANGED=$(git diff --name-only HEAD~1 HEAD | grep "^BLFS_bmo_os_utils/scripts/.*\.sh" || true)
+            fi
+          fi
+          echo "changed=$CHANGED" >> $GITHUB_OUTPUT
+          echo "Changed scripts: $CHANGED"
+
+      - name: Stop if no scripts changed
+        if: steps.changed_files.outputs.changed == ''
+        run: |
+          echo "✔ No scripts changed. Skipping build."
+          exit 0
+
+      - name: Run changed build scripts safely
+        run: |
+          set -e
+          FAILED_SCRIPTS=""
+          
+          for script in ${{ steps.changed_files.outputs.changed }}; do
+            if [[ -f "$script" && "$script" == BLFS_bmo_os_utils/scripts/* ]]; then
+              echo "🚀 Running: $script"
+              chmod +x "$script"
+              if timeout 30m bash "$script"; then
+                echo "✅ $script completed successfully"
+              else
+                echo "❌ $script failed"
+                FAILED_SCRIPTS="$FAILED_SCRIPTS $script"
+              fi
+            else
+              echo "⚠️  Skipping invalid script: $script"
+            fi
+          done
+          
+          if [[ -n "$FAILED_SCRIPTS" ]]; then
+            echo "The following scripts failed: $FAILED_SCRIPTS"
+            exit 1
+          fi
