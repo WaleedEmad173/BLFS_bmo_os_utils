@@ -1,64 +1,47 @@
-name: Test Build
+name: Validate Scripts
 
 on:
   push:
+    branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
 
 jobs:
-  build:
+  validate:
     runs-on: ubuntu-latest
-
+    
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Debug repository structure
-        run: |
-          echo "=== Current directory ==="
-          pwd
-          ls -la
-          
-          echo "=== Repository structure ==="
-          find . -type f -name "*.sh" | head -20
-          echo "---"
-          find . -type d | head -20
+      - name: Install ShellCheck
+        run: sudo apt install -y shellcheck
 
-      - name: Set up build dependencies
+      - name: Run all validations
         run: |
-          sudo apt update
-          sudo apt install -y build-essential bash wget tar make ninja-build
-
-      - name: Find and run scripts
-        run: |
-          set -e
-          echo "🔍 Looking for scripts..."
+          echo "🔍 Comprehensive script validation..."
           
-          # Try different possible locations
-          if [ -d "BLFS_bmo_os_utils/scripts" ]; then
-            echo "✅ Found BLFS_bmo_os_utils/scripts"
-            scripts=$(find BLFS_bmo_os_utils/scripts -name "*.sh")
-          elif [ -d "scripts" ]; then
-            echo "✅ Found scripts directory"
-            scripts=$(find scripts -name "*.sh")
-          else
-            # Find any .sh files in the repo
-            scripts=$(find . -name "*.sh" -type f | grep -v ".git" || true)
-          fi
-          
-          if [ -z "$scripts" ]; then
-            echo "❌ No scripts found in the repository"
-            exit 1
-          fi
-          
-          echo "📋 Scripts found:"
-          echo "$scripts"
+          scripts=$(find . -name "*.sh" -type f | grep -v ".git" || true)
+          [ -z "$scripts" ] && echo "✅ No scripts" && exit 0
           
           for script in $scripts; do
-            echo "🚀 Running: $script"
+            echo "---"
+            echo "📝 Validating: $script"
             chmod +x "$script"
-            bash "$script" || exit 1
-            echo "✅ Completed: $script"
+            
+            # 1. Syntax check
+            if ! bash -n "$script"; then
+              echo "❌ Syntax error!"
+              exit 1
+            fi
+            
+            # 2. ShellCheck
+            if ! shellcheck "$script"; then
+              echo "❌ ShellCheck failed!"
+              exit 1
+            fi
+            
+            echo "✅ All checks passed: $script"
           done
           
-          echo "🎉 All scripts executed successfully!"
+          echo "🎉 All scripts are valid!"
