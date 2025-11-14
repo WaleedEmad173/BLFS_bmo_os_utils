@@ -13,21 +13,41 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Debug repository structure
+        run: |
+          echo "=== Current directory ==="
+          pwd
+          ls -la
+          
+          echo "=== Repository structure ==="
+          find . -type f -name "*.sh" | head -20
+          echo "---"
+          find . -type d | head -20
+
       - name: Set up build dependencies
         run: |
           sudo apt update
           sudo apt install -y build-essential bash wget tar make ninja-build
 
-      - name: Run all build scripts
+      - name: Find and run scripts
         run: |
           set -e
-          echo "🔍 Finding all scripts in BLFS_bmo_os_utils/scripts/"
+          echo "🔍 Looking for scripts..."
           
-          # Find all .sh files recursively
-          scripts=$(find BLFS_bmo_os_utils/scripts -name "*.sh")
+          # Try different possible locations
+          if [ -d "BLFS_bmo_os_utils/scripts" ]; then
+            echo "✅ Found BLFS_bmo_os_utils/scripts"
+            scripts=$(find BLFS_bmo_os_utils/scripts -name "*.sh")
+          elif [ -d "scripts" ]; then
+            echo "✅ Found scripts directory"
+            scripts=$(find scripts -name "*.sh")
+          else
+            # Find any .sh files in the repo
+            scripts=$(find . -name "*.sh" -type f | grep -v ".git" || true)
+          fi
           
-          if [[ -z "$scripts" ]]; then
-            echo "❌ No scripts found!"
+          if [ -z "$scripts" ]; then
+            echo "❌ No scripts found in the repository"
             exit 1
           fi
           
