@@ -46,7 +46,7 @@ else
     
     echo "⚙️ installing..."
     if ! ninja install; then
-        echo "❌ Error: make failed!"
+        echo "❌ Error: make-install failed!"
         exit 1
     fi
 
