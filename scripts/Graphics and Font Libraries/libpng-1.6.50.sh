@@ -11,11 +11,11 @@ if [ -d "$folder_name" ]; then
     echo "✅ Folder '$folder_name' exists."
     exit 1
 else
-    git merge origin/main https://downloads.sourceforge.net/sourceforge/libpng-apng/libpng-1.6.47-apng.patch.gz 
+    wget https://downloads.sourceforge.net/sourceforge/libpng-apng/libpng-1.6.47-apng.patch.gz --no-check-certificate 
     . ./../BLFS_bmo_os_utils/scripts/installer.sh https://downloads.sourceforge.net/libpng/libpng-1.6.50.tar.xz
     echo "✅ the package downloaded successfully"
 
-   gzip -cd ../libpng-1.6.47-apng.patch.gz | patch -p1
+    gzip -cd ../libpng-1.6.47-apng.patch.gz | patch -p1
 
    echo "🔧 Running configure..."
     if ! ./configure --prefix=/usr --disable-static ; then
@@ -35,8 +35,8 @@ else
         exit 1
     fi
 
-   mkdir -v /usr/share/doc/libpng-1.6.50 &&
-cp -v README libpng-manual.txt /usr/share/doc/libpng-1.6.50
+    mkdir -v /usr/share/doc/libpng-1.6.50 &&
+    cp -v README libpng-manual.txt /usr/share/doc/libpng-1.6.50
 
 fi
 
