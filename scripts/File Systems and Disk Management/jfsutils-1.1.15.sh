@@ -13,6 +13,7 @@ if [ -d "$folder_name" ]; then
     echo "✅ Folder '$folder_name' exists."
     exit 1
 else
+    wget https://www.linuxfromscratch.org/patches/blfs/12.4/jfsutils-1.1.15-gcc10_fix-1.patch --no-check-certificate
     . ./../BLFS_bmo_os_utils/scripts/installer.sh https://jfs.sourceforge.net/project/pub/jfsutils-1.1.15.tar.gz
     echo "✅ the package downloaded successfully"
 
