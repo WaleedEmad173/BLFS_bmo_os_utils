@@ -11,13 +11,25 @@ if [ -d "$folder_name" ]; then
     echo "✅ Folder '$folder_name' exists."
     exit 1
 else
-    . ./../BLFS_bmo_os_utils/scripts/installer.sh https://ftp.osuosl.org/pub/rpm/popt/releases/popt-1.x/popt-1.19.tar.gz
+    wget https://www.linuxfromscratch.org/patches/blfs/svn/clucene-2.3.3.4-contribs_lib-1.patch --no-check-certificate
+   
+    . ./../BLFS_bmo_os_utils/scripts/installer.sh https://downloads.sourceforge.net/clucene/clucene-core-2.3.3.4.tar.gz
     echo "✅ the package downloaded successfully"
 
    # <MORE_COMMAND_IF_EXISTS_WITH_IF_STATEMENT>
+   patch -Np1 -i ../clucene-2.3.3.4-contribs_lib-1.patch &&
+
+   sed -i '/Misc.h/a #include <ctime>' src/core/CLucene/document/DateTools.cpp &&
+
+   mkdir build &&
+   cd    build 
+
 
    echo "🔧 Running configure..."
-    if ! ./configure --prefix=/usr --disable-static ; then
+    if ! cmake -D CMAKE_INSTALL_PREFIX=/usr        \
+      -D CMAKE_POLICY_VERSION_MINIMUM=3.5 \
+      -D BUILD_CONTRIBS_LIB=ON            \
+      -W no-dev ..                     ; then
         echo "❌ Error: configure failed!"
         exit 1
     fi
@@ -33,9 +45,7 @@ else
         echo "❌ Error: make failed!"
         exit 1
     fi
-    
-    install -v -m755 -d /usr/share/doc/popt-1.19 &&
-    install -v -m644 doxygen/html/* /usr/share/doc/popt-1.19
+
    # <ETC>
 
 fi

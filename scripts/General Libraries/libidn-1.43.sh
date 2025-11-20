@@ -11,7 +11,7 @@ if [ -d "$folder_name" ]; then
     echo "✅ Folder '$folder_name' exists."
     exit 1
 else
-    . ./../BLFS_bmo_os_utils/scripts/installer.sh https://ftp.osuosl.org/pub/rpm/popt/releases/popt-1.x/popt-1.19.tar.gz
+    . ./../BLFS_bmo_os_utils/scripts/installer.sh https://ftp.gnu.org/gnu/libidn/libidn-1.43.tar.gz
     echo "✅ the package downloaded successfully"
 
    # <MORE_COMMAND_IF_EXISTS_WITH_IF_STATEMENT>
@@ -27,15 +27,19 @@ else
         echo "❌ Error: make failed!"
         exit 1
     fi
-    
+
+
+
     echo "⚙️ installing..."
-    if ! make install; then
+    if ! make install ; then
         echo "❌ Error: make failed!"
         exit 1
     fi
     
-    install -v -m755 -d /usr/share/doc/popt-1.19 &&
-    install -v -m644 doxygen/html/* /usr/share/doc/popt-1.19
+    find doc -name "Makefile*" -delete            &&
+    rm -rf -v doc/{gdoc,idn.1,stamp-vti,man,texi} &&
+    mkdir -v       /usr/share/doc/libidn-1.43     &&
+    cp -r -v doc/* /usr/share/doc/libidn-1.43
    # <ETC>
 
 fi

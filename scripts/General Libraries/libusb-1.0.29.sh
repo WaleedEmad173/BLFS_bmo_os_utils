@@ -11,7 +11,7 @@ if [ -d "$folder_name" ]; then
     echo "✅ Folder '$folder_name' exists."
     exit 1
 else
-    . ./../BLFS_bmo_os_utils/scripts/installer.sh https://ftp.osuosl.org/pub/rpm/popt/releases/popt-1.x/popt-1.19.tar.gz
+    . ./../BLFS_bmo_os_utils/scripts/installer.sh https://github.com/libusb/libusb/releases/download/v1.0.29/libusb-1.0.29.tar.bz2
     echo "✅ the package downloaded successfully"
 
    # <MORE_COMMAND_IF_EXISTS_WITH_IF_STATEMENT>
@@ -33,9 +33,10 @@ else
         echo "❌ Error: make failed!"
         exit 1
     fi
-    
-    install -v -m755 -d /usr/share/doc/popt-1.19 &&
-    install -v -m644 doxygen/html/* /usr/share/doc/popt-1.19
+    install -v -d -m755 /usr/share/doc/libusb-1.0.29/apidocs &&
+    install -v -m644    doc/api-1.0/* \
+                    /usr/share/doc/libusb-1.0.29/apidocs
+
    # <ETC>
 
 fi

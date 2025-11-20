@@ -11,31 +11,41 @@ if [ -d "$folder_name" ]; then
     echo "✅ Folder '$folder_name' exists."
     exit 1
 else
-    . ./../BLFS_bmo_os_utils/scripts/installer.sh https://ftp.osuosl.org/pub/rpm/popt/releases/popt-1.x/popt-1.19.tar.gz
+
+    wget https://www.linuxfromscratch.org/patches/blfs/12.4/libportal-0.9.1-qt6.9_fixes-1.patch --no-check-certificate
+
+    . ./../BLFS_bmo_os_utils/scripts/installer.sh https://github.com/flatpak/libportal/releases/download/0.9.1/libportal-0.9.1.tar.xz
     echo "✅ the package downloaded successfully"
 
    # <MORE_COMMAND_IF_EXISTS_WITH_IF_STATEMENT>
 
-   echo "🔧 Running configure..."
-    if ! ./configure --prefix=/usr --disable-static ; then
+    patch -Np1 -i ../libportal-0.9.1-qt6.9_fixes-1.patch
+
+    mkdir build &&
+    cd    build
+
+    echo "🔧 Running configure..."
+    if ! meson setup --prefix=/usr       \
+            --buildtype=release \
+            -D vapi=false       \
+            -D docs=false       \
+            .. ; then
         echo "❌ Error: configure failed!"
         exit 1
     fi
 
     echo "⚙️  Running make..."
-    if ! make; then
+    if ! ninja; then
         echo "❌ Error: make failed!"
         exit 1
     fi
     
     echo "⚙️ installing..."
-    if ! make install; then
+    if ! ninja install; then
         echo "❌ Error: make failed!"
         exit 1
     fi
-    
-    install -v -m755 -d /usr/share/doc/popt-1.19 &&
-    install -v -m644 doxygen/html/* /usr/share/doc/popt-1.19
+
    # <ETC>
 
 fi
