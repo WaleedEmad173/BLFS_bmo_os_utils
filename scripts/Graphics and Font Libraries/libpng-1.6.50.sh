@@ -11,30 +11,32 @@ if [ -d "$folder_name" ]; then
     echo "✅ Folder '$folder_name' exists."
     exit 1
 else
-    . ./../BLFS_bmo_os_utils/scripts/installer.sh https://www.ncftp.com/public_ftp/ncftp/ncftp-3.3.0-src.tar.gz
+    wget https://downloads.sourceforge.net/sourceforge/libpng-apng/libpng-1.6.47-apng.patch.gz --no-check-certificate 
+    . ./../BLFS_bmo_os_utils/scripts/installer.sh https://downloads.sourceforge.net/libpng/libpng-1.6.50.tar.xz
     echo "✅ the package downloaded successfully"
 
-   # <MORE_COMMAND_IF_EXISTS_WITH_IF_STATEMENT>
+    gzip -cd ../libpng-1.6.47-apng.patch.gz | patch -p1
 
    echo "🔧 Running configure..."
-    if ! CC=/usr/bin/gcc \ ./configure --prefix=/usr --sysconfdir=/etc; then
+    if ! ./configure --prefix=/usr --disable-static ; then
         echo "❌ Error: configure failed!"
         exit 1
     fi
 
     echo "⚙️  Running make..."
-    if ! make -C libncftp shared && make; then
+    if ! make; then
         echo "❌ Error: make failed!"
         exit 1
     fi
     
     echo "⚙️ installing..."
-    if ! make -C libncftp soinstall && make install; then
+    if ! make install; then
         echo "❌ Error: make failed!"
         exit 1
     fi
 
-   # <ETC>
+    mkdir -v /usr/share/doc/libpng-1.6.50 &&
+    cp -v README libpng-manual.txt /usr/share/doc/libpng-1.6.50
 
 fi
 
