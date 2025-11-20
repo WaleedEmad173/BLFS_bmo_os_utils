@@ -13,6 +13,7 @@ if [ -d "$folder_name" ]; then
     echo "✅ Folder '$folder_name' exists."
     exit 1
 else
+    wget https://www.linuxfromscratch.org/patches/blfs/12.4/gptfdisk-1.0.10-convenience-1.patch --no-check-certificate
     . ./../BLFS_bmo_os_utils/scripts/installer.sh https://downloads.sourceforge.net/gptfdisk/gptfdisk-1.0.10.tar.gz
     echo "✅ the package downloaded successfully"
 
