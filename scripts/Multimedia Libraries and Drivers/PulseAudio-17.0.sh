@@ -41,7 +41,7 @@ else
     echo "⚙️ installing..."
     if ! ninja install; then
         echo "❌ Error: make failed!"
-        exit 1nstal
+        exit 1
     fi
 
     rm /usr/share/dbus-1/system.d/pulseaudio-system.conf
