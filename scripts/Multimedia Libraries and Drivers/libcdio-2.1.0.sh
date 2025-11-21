@@ -57,7 +57,7 @@ else
     echo "⚙️ installing-libcdio-paranoia..."
     if ! make install; then
         echo "❌ Error: make libcdio-paranoia failed!"
-        exit 1nstal
+        exit 1
     fi
 
     
