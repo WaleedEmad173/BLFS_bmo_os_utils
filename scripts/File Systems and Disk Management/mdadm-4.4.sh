@@ -1,4 +1,6 @@
 #!/bin/bash
+# set -E
+# trap 'echo "❌ Error: command failed at line $LINENO"; exit 1' ERR
 
 cd ~/sources/BLFS || exit 1
 
@@ -11,16 +13,12 @@ if [ -d "$folder_name" ]; then
     echo "✅ Folder '$folder_name' exists."
     exit 1
 else
-    . ./../BLFS_bmo_os_utils/scripts/installer.sh  https://www.samba.org/ftp/talloc/talloc-2.4.3.tar.gz
+    . ./../BLFS_bmo_os_utils/scripts/installer.sh https://www.kernel.org/pub/linux/utils/raid/mdadm/mdadm-4.4.tar.xz
     echo "✅ the package downloaded successfully"
 
-   # <MORE_COMMAND_IF_EXISTS_WITH_IF_STATEMENT>
+    sed -e "s/__u8 signature\[4\]/& __attribute__ ((nonstring))/" \
+    -i platform-intel.h
 
-   echo "🔧 Running configure..."
-    if ! ./configure --prefix=/usr; then
-        echo "❌ Error: configure failed!"
-        exit 1
-    fi
 
     echo "⚙️  Running make..."
     if ! make; then
@@ -29,14 +27,15 @@ else
     fi
     
     echo "⚙️ installing..."
-    if ! make install; then
+    if ! make BINDIR=/usr/sbin install; then
         echo "❌ Error: make failed!"
         exit 1
     fi
 
-   # <ETC>
+
 
 fi
 
 
 echo "🎉 FINISHED :)"
+

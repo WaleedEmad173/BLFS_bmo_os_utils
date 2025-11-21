@@ -11,13 +11,15 @@ if [ -d "$folder_name" ]; then
     echo "✅ Folder '$folder_name' exists."
     exit 1
 else
-    . ./../BLFS_bmo_os_utils/scripts/installer.sh  https://www.samba.org/ftp/talloc/talloc-2.4.3.tar.gz
+    . ./../BLFS_bmo_os_utils/scripts/installer.sh https://www.gnupg.org/ftp/gcrypt/gnutls/v3.8/gnutls-3.8.10.tar.xz
     echo "✅ the package downloaded successfully"
 
    # <MORE_COMMAND_IF_EXISTS_WITH_IF_STATEMENT>
 
    echo "🔧 Running configure..."
-    if ! ./configure --prefix=/usr; then
+    if ! ./configure --prefix=/usr \
+            --docdir=/usr/share/doc/gnutls-3.8.10 \
+            --with-default-trust-store-pkcs11="pkcs11:" ; then
         echo "❌ Error: configure failed!"
         exit 1
     fi

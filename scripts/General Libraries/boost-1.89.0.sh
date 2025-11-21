@@ -11,25 +11,31 @@ if [ -d "$folder_name" ]; then
     echo "✅ Folder '$folder_name' exists."
     exit 1
 else
-    . ./../BLFS_bmo_os_utils/scripts/installer.sh  https://www.samba.org/ftp/talloc/talloc-2.4.3.tar.gz
+    . ./../BLFS_bmo_os_utils/scripts/installer.sh  https://github.com/boostorg/boost/releases/download/boost-1.89.0/boost-1.89.0-b2-nodocs.tar.xz
     echo "✅ the package downloaded successfully"
 
    # <MORE_COMMAND_IF_EXISTS_WITH_IF_STATEMENT>
+    case $(uname -m) in
+        i?86)
+            sed -e "s/defined(__MINGW32__)/& || defined(__i386__)/" \
+                -i ./libs/stacktrace/src/exception_headers.h ;;
+    esac
 
-   echo "🔧 Running configure..."
-    if ! ./configure --prefix=/usr; then
+    
+    echo "🔧 Running configure..."
+    if ! ./bootstrap.sh --prefix=/usr --with-python=python3 ; then
         echo "❌ Error: configure failed!"
         exit 1
     fi
 
     echo "⚙️  Running make..."
-    if ! make; then
+    if ! ./b2 stage -j4 threading=multi link=shared; then
         echo "❌ Error: make failed!"
         exit 1
     fi
     
     echo "⚙️ installing..."
-    if ! make install; then
+    if ! ./b2 install threading=multi link=shared; then
         echo "❌ Error: make failed!"
         exit 1
     fi

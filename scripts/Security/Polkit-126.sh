@@ -11,25 +11,36 @@ if [ -d "$folder_name" ]; then
     echo "✅ Folder '$folder_name' exists."
     exit 1
 else
-    . ./../BLFS_bmo_os_utils/scripts/installer.sh  https://www.samba.org/ftp/talloc/talloc-2.4.3.tar.gz
+    . ./../BLFS_bmo_os_utils/scripts/installer.sh https://github.com/polkit-org/polkit/archive/126/polkit-126.tar.gz
     echo "✅ the package downloaded successfully"
 
    # <MORE_COMMAND_IF_EXISTS_WITH_IF_STATEMENT>
+    groupadd -fg 27 polkitd &&
+    useradd -c "PolicyKit Daemon Owner" -d /etc/polkit-1 -u 27 \
+        -g polkitd -s /bin/false polkitd
+   
+    mkdir build &&
+    cd    build 
 
-   echo "🔧 Running configure..."
-    if ! ./configure --prefix=/usr; then
+    echo "🔧 Running configure..."
+    if ! meson setup ..                   \
+      --prefix=/usr              \
+      --buildtype=release        \
+      -D man=true                \
+      -D session_tracking=logind \
+      -D tests=true; then
         echo "❌ Error: configure failed!"
         exit 1
     fi
 
     echo "⚙️  Running make..."
-    if ! make; then
+    if ! ninja; then
         echo "❌ Error: make failed!"
         exit 1
     fi
     
     echo "⚙️ installing..."
-    if ! make install; then
+    if ! ninja install; then
         echo "❌ Error: make failed!"
         exit 1
     fi

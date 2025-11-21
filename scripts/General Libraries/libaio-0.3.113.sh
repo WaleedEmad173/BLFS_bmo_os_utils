@@ -1,4 +1,6 @@
 #!/bin/bash
+# set -E
+# trap 'echo "❌ Error: command failed at line $LINENO"; exit 1' ERR
 
 cd ~/sources/BLFS || exit 1
 
@@ -11,16 +13,15 @@ if [ -d "$folder_name" ]; then
     echo "✅ Folder '$folder_name' exists."
     exit 1
 else
-    . ./../BLFS_bmo_os_utils/scripts/installer.sh  https://www.samba.org/ftp/talloc/talloc-2.4.3.tar.gz
+    . ./../BLFS_bmo_os_utils/scripts/installer.sh https://pagure.io/libaio/archive/libaio-0.3.113/libaio-0.3.113.tar.gz
     echo "✅ the package downloaded successfully"
 
-   # <MORE_COMMAND_IF_EXISTS_WITH_IF_STATEMENT>
+    sed -i '/install.*libaio.a/s/^/#/' src/Makefile
 
-   echo "🔧 Running configure..."
-    if ! ./configure --prefix=/usr; then
-        echo "❌ Error: configure failed!"
-        exit 1
-    fi
+    case "$(uname -m)" in
+    i?86) sed -e "s/off_t/off64_t/" -i harness/cases/23.t ;;
+    esac
+
 
     echo "⚙️  Running make..."
     if ! make; then
@@ -34,9 +35,7 @@ else
         exit 1
     fi
 
-   # <ETC>
-
 fi
 
-
 echo "🎉 FINISHED :)"
+

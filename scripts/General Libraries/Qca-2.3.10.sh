@@ -11,13 +11,21 @@ if [ -d "$folder_name" ]; then
     echo "✅ Folder '$folder_name' exists."
     exit 1
 else
-    . ./../BLFS_bmo_os_utils/scripts/installer.sh  https://www.samba.org/ftp/talloc/talloc-2.4.3.tar.gz
+    . ./../BLFS_bmo_os_utils/scripts/installer.sh https://download.kde.org/stable/qca/2.3.10/qca-2.3.10.tar.xz
     echo "✅ the package downloaded successfully"
 
    # <MORE_COMMAND_IF_EXISTS_WITH_IF_STATEMENT>
-
-   echo "🔧 Running configure..."
-    if ! ./configure --prefix=/usr; then
+    sed -i 's@cert.pem@certs/ca-bundle.crt@' CMakeLists.txt
+    mkdir build &&
+    cd    build
+    
+    echo "🔧 Running configure..."
+    if ! cmake -D CMAKE_INSTALL_PREFIX=$QT6DIR            \
+      -D CMAKE_BUILD_TYPE=Release                \
+      -D QT6=ON                                  \
+      -D QCA_INSTALL_IN_QT_PREFIX=ON             \
+      -D QCA_MAN_INSTALL_DIR:PATH=/usr/share/man \
+      .. ; then
         echo "❌ Error: configure failed!"
         exit 1
     fi

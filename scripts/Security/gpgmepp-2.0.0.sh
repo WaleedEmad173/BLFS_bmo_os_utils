@@ -11,13 +11,15 @@ if [ -d "$folder_name" ]; then
     echo "✅ Folder '$folder_name' exists."
     exit 1
 else
-    . ./../BLFS_bmo_os_utils/scripts/installer.sh  https://www.samba.org/ftp/talloc/talloc-2.4.3.tar.gz
+    . ./../BLFS_bmo_os_utils/scripts/installer.sh https://www.gnupg.org/ftp/gcrypt/gpgmepp/gpgmepp-2.0.0.tar.xz
     echo "✅ the package downloaded successfully"
 
    # <MORE_COMMAND_IF_EXISTS_WITH_IF_STATEMENT>
-
-   echo "🔧 Running configure..."
-    if ! ./configure --prefix=/usr; then
+    mkdir build &&
+    cd    build 
+    
+    echo "🔧 Running configure..."
+    if ! cmake -D CMAKE_INSTALL_PREFIX=/usr ..; then
         echo "❌ Error: configure failed!"
         exit 1
     fi

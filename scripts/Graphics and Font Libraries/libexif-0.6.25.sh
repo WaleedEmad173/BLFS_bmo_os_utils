@@ -11,13 +11,14 @@ if [ -d "$folder_name" ]; then
     echo "✅ Folder '$folder_name' exists."
     exit 1
 else
-    . ./../BLFS_bmo_os_utils/scripts/installer.sh  https://www.samba.org/ftp/talloc/talloc-2.4.3.tar.gz
+    . ./../BLFS_bmo_os_utils/scripts/installer.sh https://github.com/libexif/libexif/releases/download/v0.6.25/libexif-0.6.25.tar.bz2
     echo "✅ the package downloaded successfully"
 
-   # <MORE_COMMAND_IF_EXISTS_WITH_IF_STATEMENT>
 
    echo "🔧 Running configure..."
-    if ! ./configure --prefix=/usr; then
+    if ! ./configure --prefix=/usr    \
+            --disable-static \
+            --with-doc-dir=/usr/share/doc/libexif-0.6.25; then
         echo "❌ Error: configure failed!"
         exit 1
     fi
@@ -34,7 +35,6 @@ else
         exit 1
     fi
 
-   # <ETC>
 
 fi
 

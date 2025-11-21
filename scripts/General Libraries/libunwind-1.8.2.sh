@@ -11,13 +11,14 @@ if [ -d "$folder_name" ]; then
     echo "✅ Folder '$folder_name' exists."
     exit 1
 else
-    . ./../BLFS_bmo_os_utils/scripts/installer.sh  https://www.samba.org/ftp/talloc/talloc-2.4.3.tar.gz
+    . ./../BLFS_bmo_os_utils/scripts/installer.sh https://github.com/libunwind/libunwind/releases/download/v1.8.2/libunwind-1.8.2.tar.gz
     echo "✅ the package downloaded successfully"
 
    # <MORE_COMMAND_IF_EXISTS_WITH_IF_STATEMENT>
+    sed -i '/func.s/s/s//' tests/Gtest-nomalloc.c
 
-   echo "🔧 Running configure..."
-    if ! ./configure --prefix=/usr; then
+    echo "🔧 Running configure..."
+    if ! ./configure --prefix=/usr --disable-static ; then
         echo "❌ Error: configure failed!"
         exit 1
     fi

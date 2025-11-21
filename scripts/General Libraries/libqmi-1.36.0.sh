@@ -11,25 +11,32 @@ if [ -d "$folder_name" ]; then
     echo "✅ Folder '$folder_name' exists."
     exit 1
 else
-    . ./../BLFS_bmo_os_utils/scripts/installer.sh  https://www.samba.org/ftp/talloc/talloc-2.4.3.tar.gz
+    . ./../BLFS_bmo_os_utils/scripts/installer.sh  https://gitlab.freedesktop.org/mobile-broadband/libqmi/-/archive/1.36.0/libqmi-1.36.0.tar.gz
     echo "✅ the package downloaded successfully"
 
    # <MORE_COMMAND_IF_EXISTS_WITH_IF_STATEMENT>
+    mkdir build &&
+    cd    build 
 
-   echo "🔧 Running configure..."
-    if ! ./configure --prefix=/usr; then
+    echo "🔧 Running configure..."
+    if ! meson setup ..                 \
+      --prefix=/usr            \
+      --buildtype=release      \
+      -D bash_completion=false \
+      -D qrtr=false            \
+      -D man=false     ; then
         echo "❌ Error: configure failed!"
         exit 1
     fi
 
     echo "⚙️  Running make..."
-    if ! make; then
+    if ! ninja; then
         echo "❌ Error: make failed!"
         exit 1
     fi
     
     echo "⚙️ installing..."
-    if ! make install; then
+    if ! ninja install; then
         echo "❌ Error: make failed!"
         exit 1
     fi

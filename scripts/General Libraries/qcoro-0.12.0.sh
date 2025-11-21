@@ -11,13 +11,20 @@ if [ -d "$folder_name" ]; then
     echo "✅ Folder '$folder_name' exists."
     exit 1
 else
-    . ./../BLFS_bmo_os_utils/scripts/installer.sh  https://www.samba.org/ftp/talloc/talloc-2.4.3.tar.gz
+    . ./../BLFS_bmo_os_utils/scripts/installer.sh https://github.com/danvratil/qcoro/archive/v0.12.0/qcoro-0.12.0.tar.gz
     echo "✅ the package downloaded successfully"
 
    # <MORE_COMMAND_IF_EXISTS_WITH_IF_STATEMENT>
-
-   echo "🔧 Running configure..."
-    if ! ./configure --prefix=/usr; then
+    mkdir build &&
+    cd    build
+    
+    echo "🔧 Running configure..."
+    if ! cmake -D CMAKE_INSTALL_PREFIX=$QT6DIR \
+      -D CMAKE_BUILD_TYPE=Release     \
+      -D BUILD_TESTING=OFF            \
+      -D QCORO_BUILD_EXAMPLES=OFF     \
+      -D BUILD_SHARED_LIBS=ON         \
+       ..                        ; then
         echo "❌ Error: configure failed!"
         exit 1
     fi

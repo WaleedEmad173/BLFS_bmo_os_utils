@@ -11,29 +11,29 @@ if [ -d "$folder_name" ]; then
     echo "✅ Folder '$folder_name' exists."
     exit 1
 else
-    . ./../BLFS_bmo_os_utils/scripts/installer.sh  https://www.samba.org/ftp/talloc/talloc-2.4.3.tar.gz
+    . ./../BLFS_bmo_os_utils/scripts/installer.sh https://www.kernel.org/pub/linux/libs/security/linux-privs/libcap2/libcap-2.76.tar.xz
+
+
     echo "✅ the package downloaded successfully"
 
    # <MORE_COMMAND_IF_EXISTS_WITH_IF_STATEMENT>
 
-   echo "🔧 Running configure..."
-    if ! ./configure --prefix=/usr; then
-        echo "❌ Error: configure failed!"
-        exit 1
-    fi
+
 
     echo "⚙️  Running make..."
-    if ! make; then
+    if ! make -C pam_cap; then
         echo "❌ Error: make failed!"
         exit 1
     fi
     
     echo "⚙️ installing..."
-    if ! make install; then
+    if ! <MAKE_INSTALL>; then
         echo "❌ Error: make failed!"
         exit 1
     fi
-
+    
+    install -v -m755 pam_cap/pam_cap.so      /usr/lib/security &&
+    install -v -m644 pam_cap/capability.conf /etc/security
    # <ETC>
 
 fi

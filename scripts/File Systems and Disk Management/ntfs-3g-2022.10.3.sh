@@ -1,4 +1,6 @@
 #!/bin/bash
+# set -E
+# trap 'echo "❌ Error: command failed at line $LINENO"; exit 1' ERR
 
 cd ~/sources/BLFS || exit 1
 
@@ -11,13 +13,16 @@ if [ -d "$folder_name" ]; then
     echo "✅ Folder '$folder_name' exists."
     exit 1
 else
-    . ./../BLFS_bmo_os_utils/scripts/installer.sh  https://www.samba.org/ftp/talloc/talloc-2.4.3.tar.gz
+    . ./../BLFS_bmo_os_utils/scripts/installer.sh https://github.com/tuxera/ntfs-3g/archive/2022.10.3/ntfs-3g-2022.10.3.tar.gz
     echo "✅ the package downloaded successfully"
 
-   # <MORE_COMMAND_IF_EXISTS_WITH_IF_STATEMENT>
+    ./autogen.sh
 
    echo "🔧 Running configure..."
-    if ! ./configure --prefix=/usr; then
+    if ! ./configure --prefix=/usr        \
+            --disable-static     \
+            --with-fuse=internal \
+            --docdir=/usr/share/doc/ntfs-3g-2022.10.3 ; then
         echo "❌ Error: configure failed!"
         exit 1
     fi
@@ -34,7 +39,11 @@ else
         exit 1
     fi
 
-   # <ETC>
+    ln -svf ../bin/ntfs-3g /usr/sbin/mount.ntfs &&
+    ln -svf ntfs-3g.8 /usr/share/man/man8/mount.ntfs.8
+
+
+
 
 fi
 
