@@ -11,25 +11,29 @@ if [ -d "$folder_name" ]; then
     echo "✅ Folder '$folder_name' exists."
     exit 1
 else
-    . ./../BLFS_bmo_os_utils/scripts/installer.sh <LINK>
+    . ./../BLFS_bmo_os_utils/scripts/installer.sh  https://gstreamer.freedesktop.org/src/gstreamer/gstreamer-1.26.5.tar.xz
     echo "✅ the package downloaded successfully"
 
-   # <MORE_COMMAND_IF_EXISTS_WITH_IF_STATEMENT>
+    mkdir build 
+    cd    build 
 
    echo "🔧 Running configure..."
-    if ! <CONFIG>; then
+    if ! meson setup ..            \
+            --prefix=/usr       \
+            --buildtype=release \
+            -D gst_debug=false; then
         echo "❌ Error: configure failed!"
         exit 1
     fi
 
     echo "⚙️  Running make..."
-    if ! <MAKE>; then
+    if ! ninja; then
         echo "❌ Error: make failed!"
         exit 1
     fi
     
     echo "⚙️ installing..."
-    if ! <MAKE_INSTALL>; then
+    if ! ninja install; then
         echo "❌ Error: make failed!"
         exit 1
     fi
