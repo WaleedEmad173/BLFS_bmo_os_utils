@@ -42,11 +42,6 @@ else
    # <ETC>
    chmod u+w,go+r /usr/sbin/mount.nfs 
    chown nobody:nogroup /var/lib/nfs
-   cat >> /etc/exports << EOF /home 192.168.0.0/24(rw,subtree_check,anonuid=99,anongid=99) EOF
-   make install-nfsv4-server
-   make install-nfs-server
-   <server-name>:/home  /home nfs   rw,_netdev 0 0
-   <server-name>:/usr   /usr  nfs   ro,_netdev 0 0
 
 fi
 
