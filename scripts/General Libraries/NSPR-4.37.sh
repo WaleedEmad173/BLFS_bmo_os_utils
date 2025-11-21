@@ -11,13 +11,20 @@ if [ -d "$folder_name" ]; then
     echo "✅ Folder '$folder_name' exists."
     exit 1
 else
-    . ./../BLFS_bmo_os_utils/scripts/installer.sh  https://www.samba.org/ftp/talloc/talloc-2.4.3.tar.gz
+    . ./../BLFS_bmo_os_utils/scripts/installer.sh https://archive.mozilla.org/pub/nspr/releases/v4.37/src/nspr-4.37.tar.gz
     echo "✅ the package downloaded successfully"
 
    # <MORE_COMMAND_IF_EXISTS_WITH_IF_STATEMENT>
+    cd nspr &&
 
-   echo "🔧 Running configure..."
-    if ! ./configure --prefix=/usr; then
+    sed -i '/^RELEASE/s|^|#|' pr/src/misc/Makefile.in &&
+    sed -i 's|$(LIBRARY) ||'  config/rules.mk         &&
+
+    echo "🔧 Running configure..."
+    if ! ./configure --prefix=/usr   \
+            --with-mozilla  \
+            --with-pthreads \
+            $([ $(uname -m) = x86_64 ] && echo --enable-64bit); then
         echo "❌ Error: configure failed!"
         exit 1
     fi

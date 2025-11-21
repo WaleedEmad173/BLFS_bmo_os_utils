@@ -11,13 +11,16 @@ if [ -d "$folder_name" ]; then
     echo "✅ Folder '$folder_name' exists."
     exit 1
 else
-    . ./../BLFS_bmo_os_utils/scripts/installer.sh  https://www.samba.org/ftp/talloc/talloc-2.4.3.tar.gz
+    . ./../BLFS_bmo_os_utils/scripts/installer.sh https://github.com/rrthomas/enchant/releases/download/v2.8.12/enchant-2.8.12.tar.gz
     echo "✅ the package downloaded successfully"
 
    # <MORE_COMMAND_IF_EXISTS_WITH_IF_STATEMENT>
 
    echo "🔧 Running configure..."
-    if ! ./configure --prefix=/usr; then
+    if ! ./configure --prefix=/usr     \
+            --sysconfdir=/etc \
+            --disable-static  \
+            --docdir=/usr/share/doc/enchant-2.8.12 ; then
         echo "❌ Error: configure failed!"
         exit 1
     fi
@@ -35,6 +38,13 @@ else
     fi
 
    # <ETC>
+cat > /tmp/test-enchant.txt << "EOF"
+Tel me more abot linux
+Ther ar so many commads
+EOF
+
+enchant-2 -d en_GB -l /tmp/test-enchant.txt &&
+enchant-2 -d en_GB -a /tmp/test-enchant.txt
 
 fi
 

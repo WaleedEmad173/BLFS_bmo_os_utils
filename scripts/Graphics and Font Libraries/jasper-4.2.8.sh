@@ -11,13 +11,20 @@ if [ -d "$folder_name" ]; then
     echo "✅ Folder '$folder_name' exists."
     exit 1
 else
-    . ./../BLFS_bmo_os_utils/scripts/installer.sh  https://www.samba.org/ftp/talloc/talloc-2.4.3.tar.gz
+    . ./../BLFS_bmo_os_utils/scripts/installer.sh https://github.com/jasper-software/jasper/archive/version-4.2.8/jasper-version-4.2.8.tar.gz
     echo "✅ the package downloaded successfully"
 
-   # <MORE_COMMAND_IF_EXISTS_WITH_IF_STATEMENT>
+    mkdir BUILD &&
+    cd    BUILD
 
    echo "🔧 Running configure..."
-    if ! ./configure --prefix=/usr; then
+    if ! cmake -D CMAKE_INSTALL_PREFIX=/usr    \
+      -D CMAKE_BUILD_TYPE=Release     \
+      -D CMAKE_SKIP_INSTALL_RPATH=ON  \
+      -D JAS_ENABLE_DOC=NO            \
+      -D ALLOW_IN_SOURCE_BUILD=YES    \
+      -D CMAKE_INSTALL_DOCDIR=/usr/share/doc/jasper-4.2.8 \
+      ..; then
         echo "❌ Error: configure failed!"
         exit 1
     fi
@@ -30,11 +37,10 @@ else
     
     echo "⚙️ installing..."
     if ! make install; then
-        echo "❌ Error: make failed!"
+        echo "❌ Error: make-install failed!"
         exit 1
     fi
 
-   # <ETC>
 
 fi
 

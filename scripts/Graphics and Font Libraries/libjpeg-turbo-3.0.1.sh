@@ -11,13 +11,21 @@ if [ -d "$folder_name" ]; then
     echo "✅ Folder '$folder_name' exists."
     exit 1
 else
-    . ./../BLFS_bmo_os_utils/scripts/installer.sh  https://www.samba.org/ftp/talloc/talloc-2.4.3.tar.gz
+    . ./../BLFS_bmo_os_utils/scripts/installer.sh https://downloads.sourceforge.net/libjpeg-turbo/libjpeg-turbo-3.0.1.tar.gz
     echo "✅ the package downloaded successfully"
 
-   # <MORE_COMMAND_IF_EXISTS_WITH_IF_STATEMENT>
+    mkdir build &&
+    cd    build
 
    echo "🔧 Running configure..."
-    if ! ./configure --prefix=/usr; then
+    if ! cmake -D CMAKE_INSTALL_PREFIX=/usr        \
+      -D CMAKE_BUILD_TYPE=RELEASE         \
+      -D ENABLE_STATIC=FALSE              \
+      -D CMAKE_INSTALL_DEFAULT_LIBDIR=lib \
+      -D CMAKE_POLICY_VERSION_MINIMUM=3.5 \
+      -D CMAKE_SKIP_INSTALL_RPATH=ON      \
+      -D CMAKE_INSTALL_DOCDIR=/usr/share/doc/libjpeg-turbo-3.0.1 \
+      ..; then
         echo "❌ Error: configure failed!"
         exit 1
     fi
@@ -30,11 +38,10 @@ else
     
     echo "⚙️ installing..."
     if ! make install; then
-        echo "❌ Error: make failed!"
+        echo "❌ Error: make-install failed!"
         exit 1
     fi
 
-   # <ETC>
 
 fi
 

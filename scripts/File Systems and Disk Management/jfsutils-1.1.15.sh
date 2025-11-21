@@ -1,4 +1,6 @@
 #!/bin/bash
+# set -E
+# trap 'echo "❌ Error: command failed at line $LINENO"; exit 1' ERR
 
 cd ~/sources/BLFS || exit 1
 
@@ -11,13 +13,16 @@ if [ -d "$folder_name" ]; then
     echo "✅ Folder '$folder_name' exists."
     exit 1
 else
-    . ./../BLFS_bmo_os_utils/scripts/installer.sh  https://www.samba.org/ftp/talloc/talloc-2.4.3.tar.gz
+    wget https://www.linuxfromscratch.org/patches/blfs/12.4/jfsutils-1.1.15-gcc10_fix-1.patch --no-check-certificate
+    . ./../BLFS_bmo_os_utils/scripts/installer.sh https://jfs.sourceforge.net/project/pub/jfsutils-1.1.15.tar.gz
     echo "✅ the package downloaded successfully"
 
-   # <MORE_COMMAND_IF_EXISTS_WITH_IF_STATEMENT>
+    patch -Np1 -i ../jfsutils-1.1.15-gcc10_fix-1.patch
+    sed -i "/unistd.h/a#include <sys/types.h>"    fscklog/extract.c &&
+    sed -i "/ioctl.h/a#include <sys/sysmacros.h>" libfs/devices.c
 
    echo "🔧 Running configure..."
-    if ! ./configure --prefix=/usr; then
+    if ! ./configure; then
         echo "❌ Error: configure failed!"
         exit 1
     fi
@@ -34,9 +39,6 @@ else
         exit 1
     fi
 
-   # <ETC>
-
 fi
-
 
 echo "🎉 FINISHED :)"

@@ -11,25 +11,37 @@ if [ -d "$folder_name" ]; then
     echo "✅ Folder '$folder_name' exists."
     exit 1
 else
-    . ./../BLFS_bmo_os_utils/scripts/installer.sh  https://www.samba.org/ftp/talloc/talloc-2.4.3.tar.gz
+
+    wget https://www.linuxfromscratch.org/patches/blfs/12.4/libportal-0.9.1-qt6.9_fixes-1.patch --no-check-certificate
+
+    . ./../BLFS_bmo_os_utils/scripts/installer.sh https://github.com/flatpak/libportal/releases/download/0.9.1/libportal-0.9.1.tar.xz
     echo "✅ the package downloaded successfully"
 
    # <MORE_COMMAND_IF_EXISTS_WITH_IF_STATEMENT>
 
-   echo "🔧 Running configure..."
-    if ! ./configure --prefix=/usr; then
+    patch -Np1 -i ../libportal-0.9.1-qt6.9_fixes-1.patch
+
+    mkdir build &&
+    cd    build
+
+    echo "🔧 Running configure..."
+    if ! meson setup --prefix=/usr       \
+            --buildtype=release \
+            -D vapi=false       \
+            -D docs=false       \
+            .. ; then
         echo "❌ Error: configure failed!"
         exit 1
     fi
 
     echo "⚙️  Running make..."
-    if ! make; then
+    if ! ninja; then
         echo "❌ Error: make failed!"
         exit 1
     fi
     
     echo "⚙️ installing..."
-    if ! make install; then
+    if ! ninja install; then
         echo "❌ Error: make failed!"
         exit 1
     fi

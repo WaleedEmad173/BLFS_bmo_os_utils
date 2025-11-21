@@ -1,4 +1,6 @@
 #!/bin/bash
+# set -E
+# trap 'echo "❌ Error: command failed at line $LINENO"; exit 1' ERR
 
 cd ~/sources/BLFS || exit 1
 
@@ -11,16 +13,14 @@ if [ -d "$folder_name" ]; then
     echo "✅ Folder '$folder_name' exists."
     exit 1
 else
-    . ./../BLFS_bmo_os_utils/scripts/installer.sh  https://www.samba.org/ftp/talloc/talloc-2.4.3.tar.gz
+    wget https://www.linuxfromscratch.org/patches/blfs/12.4/gptfdisk-1.0.10-convenience-1.patch --no-check-certificate
+    . ./../BLFS_bmo_os_utils/scripts/installer.sh https://downloads.sourceforge.net/gptfdisk/gptfdisk-1.0.10.tar.gz
     echo "✅ the package downloaded successfully"
 
-   # <MORE_COMMAND_IF_EXISTS_WITH_IF_STATEMENT>
+    patch -Np1 -i ../gptfdisk-1.0.10-convenience-1.patch &&
+    sed -i 's|ncursesw/||' gptcurses.cc &&
+    sed -i 's|sbin|usr/sbin|' Makefile
 
-   echo "🔧 Running configure..."
-    if ! ./configure --prefix=/usr; then
-        echo "❌ Error: configure failed!"
-        exit 1
-    fi
 
     echo "⚙️  Running make..."
     if ! make; then
@@ -34,7 +34,6 @@ else
         exit 1
     fi
 
-   # <ETC>
 
 fi
 

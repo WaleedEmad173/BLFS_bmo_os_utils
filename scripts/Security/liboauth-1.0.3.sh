@@ -11,13 +11,17 @@ if [ -d "$folder_name" ]; then
     echo "✅ Folder '$folder_name' exists."
     exit 1
 else
-    . ./../BLFS_bmo_os_utils/scripts/installer.sh  https://www.samba.org/ftp/talloc/talloc-2.4.3.tar.gz
-    echo "✅ the package downloaded successfully"
+    wget https://www.linuxfromscratch.org/patches/blfs/12.4/liboauth-1.0.3-openssl-1.1.0-3.patch --no-check-certificate -O liboauth-1.0.3-openssl-1.1.0-3.patch
 
+    . ./../BLFS_bmo_os_utils/scripts/installer.sh https://downloads.sourceforge.net/liboauth/liboauth-1.0.3.tar.gz
+    echo "✅ the package downloaded successfully"
+    
    # <MORE_COMMAND_IF_EXISTS_WITH_IF_STATEMENT>
+    patch -Np1 -i ../liboauth-1.0.3-openssl-1.1.0-3.patch
+
 
    echo "🔧 Running configure..."
-    if ! ./configure --prefix=/usr; then
+    if ! ./configure --prefix=/usr --disable-static; then
         echo "❌ Error: configure failed!"
         exit 1
     fi

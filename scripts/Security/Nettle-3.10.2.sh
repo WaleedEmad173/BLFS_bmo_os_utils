@@ -11,13 +11,13 @@ if [ -d "$folder_name" ]; then
     echo "✅ Folder '$folder_name' exists."
     exit 1
 else
-    . ./../BLFS_bmo_os_utils/scripts/installer.sh  https://www.samba.org/ftp/talloc/talloc-2.4.3.tar.gz
+    . ./../BLFS_bmo_os_utils/scripts/installer.sh https://ftp.gnu.org/gnu/nettle/nettle-3.10.2.tar.gz
     echo "✅ the package downloaded successfully"
 
    # <MORE_COMMAND_IF_EXISTS_WITH_IF_STATEMENT>
 
    echo "🔧 Running configure..."
-    if ! ./configure --prefix=/usr; then
+    if ! ./configure --prefix=/usr --disable-static; then
         echo "❌ Error: configure failed!"
         exit 1
     fi
@@ -35,6 +35,9 @@ else
     fi
 
    # <ETC>
+    chmod   -v   755 /usr/lib/lib{hogweed,nettle}.so &&
+    install -v -m755 -d /usr/share/doc/nettle-3.10.2 &&
+    install -v -m644 nettle.{html,pdf} /usr/share/doc/nettle-3.10.2
 
 fi
 

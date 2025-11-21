@@ -11,13 +11,23 @@ if [ -d "$folder_name" ]; then
     echo "✅ Folder '$folder_name' exists."
     exit 1
 else
-    . ./../BLFS_bmo_os_utils/scripts/installer.sh  https://www.samba.org/ftp/talloc/talloc-2.4.3.tar.gz
+    . ./../BLFS_bmo_os_utils/scripts/installer.sh  https://kerberos.org/dist/krb5/1.22/krb5-1.22.1.tar.gz
     echo "✅ the package downloaded successfully"
 
    # <MORE_COMMAND_IF_EXISTS_WITH_IF_STATEMENT>
+    cd src &&
+    sed -i -e '/eq 0/{N;s/12 //}' plugins/kdb/db2/libdb2/test/run.test 
 
-   echo "🔧 Running configure..."
-    if ! ./configure --prefix=/usr; then
+    echo "🔧 Running configure..."
+    if ! ./configure --prefix=/usr            \
+            --sysconfdir=/etc        \
+            --localstatedir=/var/lib \
+            --runstatedir=/run       \
+            --with-system-et         \
+            --with-system-ss         \
+            --with-system-verto=no   \
+            --enable-dns-for-realm   \
+            --disable-rpath   ; then
         echo "❌ Error: configure failed!"
         exit 1
     fi
@@ -34,8 +44,9 @@ else
         exit 1
     fi
 
+    cp -vfr ../doc -T /usr/share/doc/krb5-1.22.1
    # <ETC>
-
+    echo "Don't forget to Configuring MIT Kerberos V5"
 fi
 
 

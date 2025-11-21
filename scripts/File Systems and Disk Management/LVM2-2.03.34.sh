@@ -1,4 +1,6 @@
 #!/bin/bash
+# set -E
+# trap 'echo "❌ Error: command failed at line $LINENO"; exit 1' ERR
 
 cd ~/sources/BLFS || exit 1
 
@@ -11,13 +13,16 @@ if [ -d "$folder_name" ]; then
     echo "✅ Folder '$folder_name' exists."
     exit 1
 else
-    . ./../BLFS_bmo_os_utils/scripts/installer.sh  https://www.samba.org/ftp/talloc/talloc-2.4.3.tar.gz
+    . ./../BLFS_bmo_os_utils/scripts/installer.sh https://sourceware.org/ftp/lvm2/LVM2.2.03.34.tgz
     echo "✅ the package downloaded successfully"
 
-   # <MORE_COMMAND_IF_EXISTS_WITH_IF_STATEMENT>
+    PATH+=:/usr/sbin                \
 
    echo "🔧 Running configure..."
-    if ! ./configure --prefix=/usr; then
+    if ! ./configure --prefix=/usr       \
+            --enable-cmdlib     \
+            --enable-pkgconfig  \
+            --enable-udev_sync; then
         echo "❌ Error: configure failed!"
         exit 1
     fi
@@ -34,9 +39,17 @@ else
         exit 1
     fi
 
-   # <ETC>
+    echo "⚙️ installing..."
+    if ! make install_systemd_units; then
+        echo "❌ Error: make failed!"
+        exit 1
+    fi    
+
+    sed -e '/locking_dir =/{s/#//;s/var/run/}' \
+    -i /etc/lvm/lvm.conf
 
 fi
 
 
 echo "🎉 FINISHED :)"
+
