@@ -35,7 +35,7 @@ else
     echo "⚙️ installing..."
     if ! ninja install; then
         echo "❌ Error: make failed!"
-        exit 1nstal
+        exit 1
     fi
 
     mv -v /usr/share/doc/wireplumber{,-0.5.10}
