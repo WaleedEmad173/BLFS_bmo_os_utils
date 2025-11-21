@@ -37,7 +37,7 @@ else
         exit 1
     fi
 
-    nstall -v -m644 README /usr/share/doc/libao-1.2.0          #Configuring Libao Config Files
+    install -v -m644 README /usr/share/doc/libao-1.2.0          #Configuring Libao Config Files
                                                                      #/etc/libao.conf and ~/.libao 
                                                                      #ايه ده هل هو تبع configure الكلام ده ظهر تحت braket بتاع make install 
 
