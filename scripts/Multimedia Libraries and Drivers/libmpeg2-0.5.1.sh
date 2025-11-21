@@ -36,7 +36,7 @@ else
     echo "⚙️ installing..."
     if ! make install; then
         echo "❌ Error: make failed!"
-        exit 1nstal
+        exit 1
     fi
 
     install -v -m755 -d /usr/share/doc/libmpeg2-0.5.1
