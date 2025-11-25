@@ -19,9 +19,9 @@ else
 
    echo "🔧 Running configure..."
     if ! [*] Networking support --->                                                [NET]
-  [*] Wireless --->                                                   [WIRELESS]
-    <*/M> cfg80211 - wireless configuration API                       [CFG80211]
-    [*]     cfg80211 wireless extensions compatibility           [CFG80211_WEXT]; then
+    [*] Wireless --->                                                   [WIRELESS]
+        <*/M> cfg80211 - wireless configuration API                       [CFG80211]
+        [*]     cfg80211 wireless extensions compatibility           [CFG80211_WEXT]; then
         echo "❌ Error: configure failed!"
         exit 1
     fi
