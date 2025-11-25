@@ -38,18 +38,25 @@ else
     fi
 
     echo "⚙️  Running make..."
-    if ! <MAKE>; then
+    if ! ninja; then
         echo "❌ Error: make failed!"
         exit 1
     fi
     
     echo "⚙️ installing..."
-    if ! <MAKE_INSTALL>; then
+    if ! ninja install; then
         echo "❌ Error: make failed!"
         exit 1
     fi
 
    # <ETC>
+   mv -v /usr/share/doc/NetworkManager{,-1.54.0}
+   for file in $(echo ../man/*.[1578]); do
+        section=${file##*.} &&
+        install -vdm 755 /usr/share/man/man$section
+        install -vm 644 $file /usr/share/man/man$section/
+   done
+   cp -Rv ../docs/{api,libnm} /usr/share/doc/NetworkManager-1.54.0
 
 fi
 
