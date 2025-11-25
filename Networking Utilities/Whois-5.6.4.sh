@@ -16,11 +16,6 @@ else
 
    # <MORE_COMMAND_IF_EXISTS_WITH_IF_STATEMENT>
 
-   echo "🔧 Running configure..."
-    if ! <CONFIG>; then
-        echo "❌ Error: configure failed!"
-        exit 1
-    fi
 
     echo "⚙️  Running make..."
     if ! make; then
