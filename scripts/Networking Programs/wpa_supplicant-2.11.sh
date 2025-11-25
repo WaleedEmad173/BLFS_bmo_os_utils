@@ -69,11 +69,6 @@ cd wpa_supplicant
         exit 1
     fi
     
-    echo "⚙️ installing..."
-    if ! <MAKE_INSTALL>; then
-        echo "❌ Error: make failed!"
-        exit 1
-    fi
 
    # <ETC>
     install -v -m755 wpa_{cli,passphrase,supplicant} /usr/sbin/ 
